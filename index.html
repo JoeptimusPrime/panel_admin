@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>KYC Admin · Professional</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f4f6fc;
+      color: #1e293b;
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+
+    /* professional login container */
+    .login-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: radial-gradient(circle at 20% 30%, #1e3a5f, #0b1e33);
+      padding: 20px;
+    }
+
+    .login-card {
+      background: rgba(255, 255, 255, 0.97);
+      backdrop-filter: blur(12px);
+      padding: 2.5rem 2rem;
+      border-radius: 28px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 30px 50px rgba(0, 0, 0, 0.4);
+      transition: all 0.2s ease;
+    }
+
+    .login-card h2 {
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: #0b2b4a;
+      margin-bottom: 1.8rem;
+      letter-spacing: -0.3px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .login-card h2::before {
+      content: "🔐";
+      font-size: 1.8rem;
+    }
+
+    .field {
+      margin-bottom: 1.4rem;
+    }
+
+    .field label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #334155;
+      margin-bottom: 6px;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+    }
+
+    .login-input {
+      width: 100%;
+      padding: 14px 16px;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 14px;
+      font-size: 1rem;
+      background: #ffffff;
+      transition: 0.2s;
+      outline: none;
+      background: #fafbfc;
+    }
+
+    .login-input:focus {
+      border-color: #1e3a5f;
+      box-shadow: 0 0 0 3px rgba(30, 58, 95, 0.15);
+      background: white;
+    }
+
+    .btn-primary {
+      width: 100%;
+      background: #0b2b4a;
+      color: white;
+      padding: 14px 20px;
+      border: none;
+      border-radius: 14px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      letter-spacing: 0.3px;
+      margin-top: 0.5rem;
+      background: linear-gradient(135deg, #1e3a5f, #0f2b44);
+      box-shadow: 0 8px 18px rgba(12, 38, 64, 0.3);
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #234b6e, #0f2b44);
+    }
+
+    .error-message {
+      color: #d92d20;
+      font-size: 0.9rem;
+      margin-top: 1rem;
+      font-weight: 500;
+    }
+
+    /* dashboard layout */
+    .dashboard {
+      display: none;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .header {
+      background: #ffffff;
+      padding: 18px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #edf2f7;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+      background: white;
+    }
+
+    .header h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #0b2b4a;
+      letter-spacing: -0.3px;
+    }
+
+    .logout-btn {
+      background: transparent;
+      border: 1px solid #cbd5e1;
+      padding: 8px 20px;
+      border-radius: 30px;
+      font-weight: 600;
+      color: #334155;
+      cursor: pointer;
+      transition: 0.2s;
+      background: white;
+    }
+
+    .logout-btn:hover {
+      background: #f1f5f9;
+      border-color: #94a3b8;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      padding: 28px 32px;
+      max-width: 1300px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .stat-card {
+      background: white;
+      border-radius: 20px;
+      padding: 22px 20px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.02);
+      border: 1px solid #f0f4fe;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: transform 0.2s;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-2px);
+    }
+
+    .stat-label {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #475569;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .stat-number {
+      font-size: 2.4rem;
+      font-weight: 700;
+      color: #0f2b44;
+      margin-top: 6px;
+    }
+
+    .container {
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 10px 32px 32px;
+      width: 100%;
+    }
+
+    .section-title {
+      font-weight: 600;
+      font-size: 1.2rem;
+      margin: 10px 0 16px;
+      color: #1e293b;
+    }
+
+    .request-card {
+      background: white;
+      border-radius: 20px;
+      margin-bottom: 22px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.03);
+      border: 1px solid #ecf1f7;
+      overflow: hidden;
+      transition: box-shadow 0.2s;
+    }
+
+    .request-card:hover {
+      box-shadow: 0 16px 30px rgba(0,0,0,0.05);
+    }
+
+    .request-header {
+      padding: 18px 24px;
+      background: #f9fafc;
+      border-bottom: 1px solid #eef2f6;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .request-header h3 {
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+
+    .status-badge {
+      padding: 5px 16px;
+      border-radius: 30px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+
+    .status-pending {
+      background: #fff7e5;
+      color: #b45309;
+    }
+
+    .request-body {
+      padding: 24px;
+      display: flex;
+      gap: 32px;
+      flex-wrap: wrap;
+    }
+
+    .info-section {
+      flex: 2;
+      min-width: 240px;
+    }
+
+    .info-section p {
+      margin-bottom: 10px;
+      font-size: 0.95rem;
+      color: #2d3a4f;
+    }
+
+    .images-section {
+      flex: 1.2;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      min-width: 180px;
+    }
+
+    .image-preview {
+      width: 100%;
+      max-height: 150px;
+      object-fit: cover;
+      border-radius: 14px;
+      cursor: pointer;
+      border: 1px solid #e2e8f0;
+      transition: 0.2s;
+      background: #f8fafc;
+    }
+
+    .image-preview:hover {
+      transform: scale(1.01);
+      border-color: #94a3b8;
+    }
+
+    .action-buttons {
+      padding: 16px 24px;
+      background: #fdfdfe;
+      border-top: 1px solid #edf2f9;
+      display: flex;
+      justify-content: flex-end;
+      gap: 14px;
+    }
+
+    .btn-reject {
+      background: white;
+      border: 1px solid #fecaca;
+      color: #b91c1c;
+      padding: 10px 24px;
+      border-radius: 30px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .btn-reject:hover {
+      background: #fee2e2;
+    }
+
+    .btn-approve {
+      background: #0f2b44;
+      border: none;
+      color: white;
+      padding: 10px 28px;
+      border-radius: 30px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+      background: linear-gradient(135deg, #1e3b5a, #0a253c);
+    }
+
+    .btn-approve:hover {
+      background: linear-gradient(135deg, #244b6e, #0a253c);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 48px;
+      color: #64748b;
+      font-style: italic;
+      background: white;
+      border-radius: 20px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 700px) {
+      .stats-grid {
+        grid-template-columns: 1fr;
+        padding: 20px;
+      }
+      .request-body {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- LOGIN SECTION (displayed first) -->
+  <div id="login-section" class="login-wrapper">
+    <div class="login-card">
+      <h2>Admin Access</h2>
+      <div class="field">
+        <label>Email</label>
+        <input type="email" id="email" class="login-input" placeholder="admin@example.com" autocomplete="email">
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input type="password" id="password" class="login-input" placeholder="········" autocomplete="current-password">
+      </div>
+      <button id="login-button" class="btn-primary" onclick="handleLogin()">Sign in</button>
+      <div id="error-msg" class="error-message"></div>
+    </div>
+  </div>
+
+  <!-- DASHBOARD (hidden until login) -->
+  <div id="dashboard" class="dashboard">
+    <div class="header">
+      <h1>🔍 KYC Verification</h1>
+      <button class="logout-btn" onclick="handleLogout()">Log out</button>
+    </div>
+
+    <!-- stats summary -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <span class="stat-label">Pending</span>
+        <span class="stat-number" id="stat-pending">0</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Approved</span>
+        <span class="stat-number" id="stat-approved">0</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Rejected</span>
+        <span class="stat-number" id="stat-rejected">0</span>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="section-title">⏳ Pending requests</div>
+      <div id="list-container">Loading data...</div>
+    </div>
+  </div>
+
+  <!-- IMAGE MODAL -->
+  <div id="imageModal" onclick="closeModal()" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); justify-content: center; align-items: center; z-index: 1000;">
+    <span onclick="closeModal()" style="position: absolute; top: 20px; right: 40px; color: white; font-size: 44px; cursor: pointer; font-weight: 300;">&times;</span>
+    <img id="modalImage" style="max-width: 92%; max-height: 92%; border-radius: 12px; box-shadow: 0 20px 40px black;">
+  </div>
+
+  <script>
+    (function() {
+      // ---------- SUPABASE CONFIG ----------
+      const URL_PROD = 'https://gmsyziclplsrmwlwipqg.supabase.co';
+      const KEY_PROD = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdtc3l6aWNscGxzcm13bHdpcHFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0NTgzODYsImV4cCI6MjA5MjAzNDM4Nn0.hT50-RGvVMBtmg1r1cNqv2Xmku3DR1LA_8wovK9q4EA';
+
+      // single supabase client
+      const supabaseClient = window.supabase.createClient(URL_PROD, KEY_PROD);
+
+      const ADMIN_EMAILS = ['kitaakingofficial@gmail.com'];
+
+      // ---------- GLOBAL STATE ----------
+      let currentStats = { pending: 0, approved: 0, rejected: 0 };
+
+      // ---------- LOGIN ----------
+      window.handleLogin = async function() {
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value;
+        const errorMsg = document.getElementById('error-msg');
+        errorMsg.innerText = '';
+
+        if (!email || !password) {
+          errorMsg.innerText = 'Please enter email and password.';
+          return;
+        }
+
+        try {
+          const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+          if (error) throw error;
+
+          if (!ADMIN_EMAILS.includes(data.user.email)) {
+            await supabaseClient.auth.signOut();
+            errorMsg.innerText = 'Access denied. Not an admin account.';
+            return;
+          }
+
+          // success: switch to dashboard
+          document.getElementById('login-section').classList.add('hidden');
+          document.getElementById('dashboard').style.display = 'flex';
+          await fetchAndRenderDashboard();
+        } catch (err) {
+          errorMsg.innerText = err.message || 'Login failed';
+        }
+      };
+
+      // ---------- LOGOUT ----------
+      window.handleLogout = async function() {
+        await supabaseClient.auth.signOut();
+        // reset view to login
+        document.getElementById('dashboard').style.display = 'none';
+        document.getElementById('login-section').classList.remove('hidden');
+        document.getElementById('email').value = '';
+        document.getElementById('password').value = '';
+        document.getElementById('error-msg').innerText = '';
+      };
+
+      // ---------- FETCH STATS + PENDING ----------
+      async function fetchAndRenderDashboard() {
+        await Promise.all([fetchStats(), fetchRequests()]);
+      }
+
+      async function fetchStats() {
+        try {
+          // fetch all statuses for counting (lightweight: we only need status field)
+          const { data, error } = await supabaseClient
+            .from('kyc_requests')
+            .select('status');
+
+          if (error) {
+            console.error('Stats error:', error);
+            return;
+          }
+
+          const counts = { pending: 0, approved: 0, rejected: 0 };
+          (data || []).forEach(item => {
+            if (item.status === 'pending') counts.pending++;
+            else if (item.status === 'approved') counts.approved++;
+            else if (item.status === 'rejected') counts.rejected++;
+          });
+
+          currentStats = counts;
+          document.getElementById('stat-pending').innerText = counts.pending;
+          document.getElementById('stat-approved').innerText = counts.approved;
+          document.getElementById('stat-rejected').innerText = counts.rejected;
+        } catch (e) {
+          console.warn('Stats fetch failed', e);
+        }
+      }
+
+      // ---------- FETCH PENDING REQUESTS ----------
+      window.fetchRequests = async function() {
+        const container = document.getElementById('list-container');
+        container.innerHTML = 'Loading pending requests...';
+
+        const { data, error } = await supabaseClient
+          .from('kyc_requests')
+          .select('*')
+          .eq('status', 'pending')
+          .order('submitted_at', { ascending: false });
+
+        if (error) {
+          container.innerHTML = `<div class="empty-state">Error: ${error.message}</div>`;
+          return;
+        }
+
+        if (!data || data.length === 0) {
+          container.innerHTML = `<div class="empty-state">✨ No pending KYC requests.</div>`;
+          // update stats after possible changes
+          await fetchStats();
+          return;
+        }
+
+        container.innerHTML = data.map(req => {
+          const safeName = escapeHtml(req.full_name || 'Unknown');
+          const safeEmail = escapeHtml(req.email || '—');
+          const safePhone = escapeHtml(req.phone_number || '—');
+          const safeNationalId = escapeHtml(req.national_id_number || '—');
+          const isBusiness = req.is_business_account;
+          const businessName = escapeHtml(req.business_name || 'N/A');
+          const businessLicense = escapeHtml(req.business_license_number || 'N/A');
+          const submittedDate = req.submitted_at ? new Date(req.submitted_at).toLocaleString() : '—';
+          const idImage = req.national_id_image_url || '';
+          const selfieImage = req.selfie_image_url || '';
+          const bizLicenseImage = req.business_license_image_url || '';
+
+          return `
+            <div class="request-card">
+              <div class="request-header">
+                <h3>${safeName}</h3>
+                <span class="status-badge status-pending">PENDING</span>
+              </div>
+              <div class="request-body">
+                <div class="info-section">
+                  <p><strong>Email:</strong> ${safeEmail}</p>
+                  <p><strong>Phone:</strong> ${safePhone}</p>
+                  <p><strong>National ID:</strong> ${safeNationalId}</p>
+                  ${isBusiness ? `
+                    <p><strong>Business Name:</strong> ${businessName}</p>
+                    <p><strong>Business License:</strong> ${businessLicense}</p>
+                  ` : ''}
+                  <p><strong>Submitted:</strong> ${submittedDate}</p>
+                </div>
+                <div class="images-section">
+                  ${idImage ? `<div><p><strong>ID Card</strong></p><img class="image-preview" src="${idImage}" onclick="showImage('${idImage}')" alt="ID"></div>` : ''}
+                  ${selfieImage ? `<div><p><strong>Selfie</strong></p><img class="image-preview" src="${selfieImage}" onclick="showImage('${selfieImage}')" alt="Selfie"></div>` : ''}
+                  ${isBusiness && bizLicenseImage ? `<div><p><strong>Business License</strong></p><img class="image-preview" src="${bizLicenseImage}" onclick="showImage('${bizLicenseImage}')" alt="License"></div>` : ''}
+                </div>
+              </div>
+              <div class="action-buttons">
+                <button class="btn-reject" onclick="updateRequestStatus('${req.id}', 'rejected', '${req.user_id}')">✕ Reject</button>
+                <button class="btn-approve" onclick="updateRequestStatus('${req.id}', 'approved', '${req.user_id}')">✓ Approve</button>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        // refresh stats after rendering list
+        await fetchStats();
+      };
+
+      // simple escape utility
+      function escapeHtml(text) {
+        if (!text) return '';
+        return String(text)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#039;');
+      }
+
+      // ---------- UPDATE STATUS (APPROVE/REJECT) ----------
+      window.updateRequestStatus = async function(requestId, status, userId) {
+        if (!confirm(`Are you sure you want to ${status} this request?`)) return;
+
+        try {
+          const { error: reqError } = await supabaseClient
+            .from('kyc_requests')
+            .update({
+              status: status,
+              reviewed_at: new Date().toISOString()
+            })
+            .eq('id', requestId);
+
+          if (reqError) throw reqError;
+
+          if (status === 'approved') {
+            const { error: profileError } = await supabaseClient
+              .from('profiles')
+              .update({
+                is_kyc_verified: true,
+                kyc_status: 'approved',
+                is_verified: true,
+                verified_at: new Date().toISOString()
+              })
+              .eq('id', userId);
+            if (profileError) throw profileError;
+          } else if (status === 'rejected') {
+            const { error: profileError } = await supabaseClient
+              .from('profiles')
+              .update({
+                kyc_status: 'rejected'
+              })
+              .eq('id', userId);
+            if (profileError) throw profileError;
+          }
+
+          alert(`Request ${status} successfully.`);
+          // refresh both stats and list
+          await fetchAndRenderDashboard();
+        } catch (error) {
+          alert('Update error: ' + (error.message || error));
+        }
+      };
+
+      // ---------- IMAGE MODAL ----------
+      window.showImage = function(url) {
+        const modal = document.getElementById('imageModal');
+        const modalImg = document.getElementById('modalImage');
+        if (modal && modalImg) {
+          modal.style.display = 'flex';
+          modalImg.src = url;
+        }
+      };
+
+      window.closeModal = function() {
+        const modal = document.getElementById('imageModal');
+        if (modal) modal.style.display = 'none';
+      };
+
+      // ---------- SESSION CHECK ON PAGE LOAD ----------
+      window.onload = async () => {
+        try {
+          const { data: { session } } = await supabaseClient.auth.getSession();
+          if (session && ADMIN_EMAILS.includes(session.user.email)) {
+            // valid admin session: show dashboard directly
+            document.getElementById('login-section').classList.add('hidden');
+            document.getElementById('dashboard').style.display = 'flex';
+            await fetchAndRenderDashboard();
+          } else {
+            // ensure login visible
+            document.getElementById('login-section').classList.remove('hidden');
+            document.getElementById('dashboard').style.display = 'none';
+          }
+        } catch (e) {
+          console.warn('Session check error', e);
+          document.getElementById('login-section').classList.remove('hidden');
+          document.getElementById('dashboard').style.display = 'none';
+        }
+      };
+
+      // allow Enter key on login
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !document.getElementById('dashboard').style.display.includes('flex')) {
+          const loginVisible = !document.getElementById('login-section').classList.contains('hidden');
+          if (loginVisible) {
+            e.preventDefault();
+            window.handleLogin();
+          }
+        }
+      });
+
+    })();
+  </script>
+</body>
+</html>
