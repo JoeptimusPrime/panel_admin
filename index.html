@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KYC Admin Panel</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f5f7fb;
+            color: #1a1a2e;
+        }
+        .header {
+            background: linear-gradient(135deg, #1a237e 0%, #0d1b2a 100%);
+            color: white;
+            padding: 24px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            padding: 32px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .stat-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        .stat-number {
+            font-size: 36px;
+            font-weight: bold;
+            color: #1a237e;
+        }
+        .request-card {
+            background: white;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+        .request-header {
+            padding: 20px 24px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .status-pending { background: #fff3e0; color: #ff9800; }
+        .request-body { padding: 24px; display: flex; gap: 32px; flex-wrap: wrap; }
+        .info-section { flex: 2; }
+        .images-section { flex: 1; display: flex; gap: 16px; flex-direction: column; }
+        .image-preview {
+            width: 100%;
+            border-radius: 12px;
+            cursor: pointer;
+            border: 1px solid #e9ecef;
+        }
+        .btn-approve {
+            background: #4caf50;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .btn-reject {
+            background: #f44336;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .tabs {
+            display: flex;
+            gap: 8px;
+            padding: 0 32px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .tab {
+            padding: 12px 24px;
+            background: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 8px 8px 0 0;
+        }
+        .tab.active {
+            background: white;
+            border-bottom: 3px solid #1a237e;
+            font-weight: bold;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 32px 32px; }
+        .hidden {
+    display: none;
+}
+    </style>
+</head>
+<body>
+
+        <div id="dashboard" style="display: none;">
+            <h1>KYC Dashboard</h1>
+            <button onclick="handleLogout()" style="width: auto;">Logout</button>
+        </div>
+        <hr>
+    <div id="list-container">Inapakia data...</div>
+    <!-- LOGIN SECTION -->
+<div id="login-section" style="display: flex; justify-content: center; align-items: center; min-height: 100vh; background: linear-gradient(135deg, #1a237e 0%, #0d1b2a 100%);">
+    <div style="background: white; padding: 40px; border-radius: 16px; width: 400px;">
+        <h2 style="margin-bottom: 24px;">Admin Login</h2>
+        <input type="email" id="email" class="login-input" placeholder="Email" style="width: 100%; padding: 12px; margin-bottom: 16px; border: 1px solid #ddd; border-radius: 8px;">
+        <input type="password" id="password" class="login-input" placeholder="Password" style="width: 100%; padding: 12px; margin-bottom: 16px; border: 1px solid #ddd; border-radius: 8px;">
+        <button onclick="handleLogin()" style="width: 100%; background: #1a237e; color: white; padding: 12px; border: none; border-radius: 8px; cursor: pointer;">Login</button>
+        <div id="error-msg" style="color: red; margin-top: 16px;"></div>
+    </div>
+</div>
+
+<!-- IMAGE MODAL -->
+<div id="imageModal" onclick="closeModal()" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); justify-content: center; align-items: center; z-index: 1000;">
+    <span onclick="closeModal()" style="position: absolute; top: 20px; right: 40px; color: white; font-size: 40px; cursor: pointer;">&times;</span>
+    <img id="modalImage" style="max-width: 90%; max-height: 90%;">
+</div>
+    <script>
+        // 1. WEKA CREDENTIALS ZAKO HAPA
+        const URL_PROD = 'https://gmsyziclplsrmwlwipqg.supabase.co';
+        const KEY_PROD = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdtc3l6aWNscGxzcm13bHdpcHFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0NTgzODYsImV4cCI6MjA5MjAzNDM4Nn0.hT50-RGvVMBtmg1r1cNqv2Xmku3DR1LA_8wovK9q4EA';
+
+        // 2. INITIALIZE CLIENT (Mara moja tu!)
+        // Hapa ndipo kosa lilikuwa: Hakikisha jina hili halijirudii kwingine kama 'let' au 'const'
+        const supabaseClient = window.supabase.createClient(URL_PROD, KEY_PROD);
+
+        const ADMIN_EMAILS = ['kitaakingofficial@gmail.com'];
+
+        // 3. LOGIN FUNCTION
+        async function handleLogin() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorMsg = document.getElementById('error-msg');
+
+            try {
+                const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+                
+                if (error) throw error;
+
+                if (!ADMIN_EMAILS.includes(data.user.email)) {
+                    await supabaseClient.auth.signOut();
+                    alert("Wewe si Admin!");
+                    return;
+                }
+
+                renderDashboard();
+            } catch (err) {
+                errorMsg.innerText = err.message;
+            }
+        }
+
+        // 4. LOGOUT FUNCTION
+        async function handleLogout() {
+            await supabaseClient.auth.signOut();
+            window.location.reload();
+        }
+
+        // 5. RENDER UI
+        function renderDashboard() {
+            document.getElementById('login-section').classList.add('hidden');
+            document.getElementById('dashboard').style.display = 'block';
+            fetchRequests();
+        }
+
+        // 6. FETCH DATA NA ONGEZA BUTTONS ZA APPROVE/DECLINE
+async function fetchRequests() {
+    const container = document.getElementById('list-container');
+    
+    // Fetch pending requests only (or all)
+    const { data, error } = await supabaseClient
+        .from('kyc_requests')
+        .select('*')
+        .eq('status', 'pending');  // Onyesha pending tu
+
+    if (error) {
+        container.innerHTML = "Error: " + error.message;
+        return;
+    }
+
+    if (data.length === 0) {
+        container.innerHTML = "Hakuna maombi mapya.";
+        return;
+    }
+
+    // BUILD HTML WITH APPROVE/DECLINE BUTTONS
+    container.innerHTML = data.map(req => `
+        <div class="request-card">
+            <div class="request-header">
+                <h3>${req.full_name}</h3>
+                <span class="status-badge status-pending">PENDING</span>
+            </div>
+            <div class="request-body">
+                <div class="info-section">
+                    <p><strong>Email:</strong> ${req.email}</p>
+                    <p><strong>Phone:</strong> ${req.phone_number}</p>
+                    <p><strong>National ID:</strong> ${req.national_id_number}</p>
+                    ${req.is_business_account ? `
+                        <p><strong>Business Name:</strong> ${req.business_name || 'N/A'}</p>
+                        <p><strong>Business License:</strong> ${req.business_license_number || 'N/A'}</p>
+                    ` : ''}
+                    <p><strong>Submitted:</strong> ${new Date(req.submitted_at).toLocaleString()}</p>
+                </div>
+                <div class="images-section">
+                    <p><strong>ID Card:</strong></p>
+                    <img class="image-preview" src="${req.national_id_image_url}" onclick="showImage(this.src)">
+                    <p><strong>Selfie:</strong></p>
+                    <img class="image-preview" src="${req.selfie_image_url}" onclick="showImage(this.src)">
+                    ${req.business_license_image_url ? `
+                        <p><strong>Business License:</strong></p>
+                        <img class="image-preview" src="${req.business_license_image_url}" onclick="showImage(this.src)">
+                    ` : ''}
+                </div>
+            </div>
+            <!-- BUTTONS ZA APPROVE/DECLINE -->
+            <div class="buttons" style="padding: 16px 24px; background: #f8f9fa; border-top: 1px solid #e9ecef;">
+                <button class="btn-reject" onclick="updateRequestStatus('${req.id}', 'rejected', '${req.user_id}')">Reject</button>
+                <button class="btn-approve" onclick="updateRequestStatus('${req.id}', 'approved', '${req.user_id}')">Approve</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+// 8. UPDATE REQUEST STATUS (APPROVE/REJECT)
+async function updateRequestStatus(requestId, status, userId) {
+    if (!confirm(`Are you sure you want to ${status} this request?`)) return;
+    
+    try {
+        // Update kyc_requests table
+        const { error: reqError } = await supabaseClient
+            .from('kyc_requests')
+            .update({ 
+                status: status, 
+                reviewed_at: new Date().toISOString() 
+            })
+            .eq('id', requestId);
+        
+        if (reqError) throw reqError;
+        
+        if (status === 'approved') {
+            // Update profiles table
+            const { error: profileError } = await supabaseClient
+                .from('profiles')
+                .update({ 
+                    is_kyc_verified: true, 
+                    kyc_status: 'approved', 
+                    is_verified: true, 
+                    verified_at: new Date().toISOString() 
+                })
+                .eq('id', userId);
+            
+            if (profileError) throw profileError;
+        } else if (status === 'rejected') {
+            // Update profiles table for rejection
+            const { error: profileError } = await supabaseClient
+                .from('profiles')
+                .update({ 
+                    kyc_status: 'rejected' 
+                })
+                .eq('id', userId);
+            
+            if (profileError) throw profileError;
+        }
+        
+        alert(`Request ${status} successfully!`);
+        fetchRequests(); // Refresh list
+        
+    } catch (error) {
+        alert('Error: ' + error.message);
+    }
+}
+
+// 9. SHOW IMAGE MODAL
+function showImage(url) {
+    const modal = document.getElementById('imageModal');
+    const modalImg = document.getElementById('modalImage');
+    modal.style.display = 'flex';
+    modalImg.src = url;
+}
+
+function closeModal() {
+    document.getElementById('imageModal').style.display = 'none';
+}
+
+        // 7. CHECK SESSION ON LOAD
+        window.onload = async () => {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (session && ADMIN_EMAILS.includes(session.user.email)) {
+                renderDashboard();
+            }
+        };
+    </script>
+</body>
+</html>
