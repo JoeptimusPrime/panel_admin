@@ -1,259 +1,249 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-  <title>KYC Admin · Professional</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>KYC Admin Pro · Kitaa King</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+    :root {
+      --primary: #1e3a5f;
+      --primary-dark: #0f2b44;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+      --radius: 16px;
     }
-
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #f4f6fc;
-      color: #1e293b;
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
       line-height: 1.5;
       min-height: 100vh;
     }
-
-    /* professional login container */
+    /* LOGIN */
     .login-wrapper {
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
-      background: radial-gradient(circle at 20% 30%, #1e3a5f, #0b1e33);
+      background: radial-gradient(circle at 20% 30%, var(--primary), var(--primary-dark));
       padding: 20px;
     }
-
     .login-card {
-      background: rgba(255, 255, 255, 0.97);
-      backdrop-filter: blur(12px);
+      background: var(--card);
       padding: 2.5rem 2rem;
-      border-radius: 28px;
+      border-radius: var(--radius);
       width: 100%;
       max-width: 420px;
-      box-shadow: 0 30px 50px rgba(0, 0, 0, 0.4);
-      transition: all 0.2s ease;
+      box-shadow: var(--shadow);
     }
-
     .login-card h2 {
       font-size: 1.8rem;
-      font-weight: 600;
-      color: #0b2b4a;
-      margin-bottom: 1.8rem;
-      letter-spacing: -0.3px;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 1.5rem;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
     }
-
-    .login-card h2::before {
-      content: "🔐";
-      font-size: 1.8rem;
-    }
-
-    .field {
-      margin-bottom: 1.4rem;
-    }
-
+    .field { margin-bottom: 1.2rem; }
     .field label {
       display: block;
       font-size: 0.85rem;
       font-weight: 600;
-      color: #334155;
+      color: var(--text-muted);
       margin-bottom: 6px;
-      letter-spacing: 0.3px;
       text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
-
     .login-input {
       width: 100%;
-      padding: 14px 16px;
-      border: 1.5px solid #e2e8f0;
-      border-radius: 14px;
+      padding: 12px 16px;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
       font-size: 1rem;
-      background: #ffffff;
+      background: #fafbfc;
       transition: 0.2s;
       outline: none;
-      background: #fafbfc;
     }
-
     .login-input:focus {
-      border-color: #1e3a5f;
-      box-shadow: 0 0 0 3px rgba(30, 58, 95, 0.15);
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(30,58,95,0.1);
       background: white;
     }
-
     .btn-primary {
       width: 100%;
-      background: #0b2b4a;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
       color: white;
-      padding: 14px 20px;
+      padding: 14px;
       border: none;
-      border-radius: 14px;
+      border-radius: 12px;
       font-weight: 600;
       font-size: 1rem;
       cursor: pointer;
-      transition: background 0.2s, transform 0.1s;
-      letter-spacing: 0.3px;
-      margin-top: 0.5rem;
-      background: linear-gradient(135deg, #1e3a5f, #0f2b44);
-      box-shadow: 0 8px 18px rgba(12, 38, 64, 0.3);
+      transition: 0.2s;
     }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: var(--shadow); }
+    .error-msg { color: var(--danger); font-size: 0.9rem; margin-top: 1rem; font-weight: 500; }
 
-    .btn-primary:hover {
-      background: linear-gradient(135deg, #234b6e, #0f2b44);
-    }
-
-    .error-message {
-      color: #d92d20;
-      font-size: 0.9rem;
-      margin-top: 1rem;
-      font-weight: 500;
-    }
-
-    /* dashboard layout */
-    .dashboard {
-      display: none;
-      flex-direction: column;
-      min-height: 100vh;
-    }
-
+    /* DASHBOARD */
+    .dashboard { display: none; flex-direction: column; min-height: 100vh; }
     .header {
-      background: #ffffff;
+      background: var(--card);
       padding: 18px 32px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 1px solid #edf2f7;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.02);
-      background: white;
+      border-bottom: 1px solid var(--border);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
     }
-
-    .header h1 {
-      font-size: 1.5rem;
-      font-weight: 600;
-      color: #0b2b4a;
-      letter-spacing: -0.3px;
-    }
-
+    .header h1 { font-size: 1.4rem; font-weight: 700; color: var(--primary); }
     .logout-btn {
       background: transparent;
-      border: 1px solid #cbd5e1;
+      border: 1px solid var(--border);
       padding: 8px 20px;
       border-radius: 30px;
       font-weight: 600;
-      color: #334155;
+      color: var(--text);
       cursor: pointer;
       transition: 0.2s;
-      background: white;
     }
+    .logout-btn:hover { background: #f1f5f9; }
 
-    .logout-btn:hover {
-      background: #f1f5f9;
-      border-color: #94a3b8;
-    }
-
+    /* STATS */
     .stats-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(4, 1fr);
       gap: 20px;
       padding: 28px 32px;
-      max-width: 1300px;
+      max-width: 1400px;
       margin: 0 auto;
       width: 100%;
     }
-
     .stat-card {
-      background: white;
-      border-radius: 20px;
-      padding: 22px 20px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.02);
-      border: 1px solid #f0f4fe;
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+      text-align: center;
+      border: 1px solid var(--border);
+    }
+    .stat-label { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; }
+    .stat-number { font-size: 2rem; font-weight: 700; color: var(--primary); margin-top: 6px; }
+    .stat-card.pending .stat-number { color: var(--warning); }
+    .stat-card.approved .stat-number { color: var(--success); }
+    .stat-card.rejected .stat-number { color: var(--danger); }
+    .stat-card.blocked .stat-number { color: #64748b; }
+
+    /* TABS */
+    .tabs {
       display: flex;
-      flex-direction: column;
-      align-items: center;
-      transition: transform 0.2s;
-    }
-
-    .stat-card:hover {
-      transform: translateY(-2px);
-    }
-
-    .stat-label {
-      font-size: 0.9rem;
-      font-weight: 500;
-      color: #475569;
-      text-transform: uppercase;
-      letter-spacing: 0.4px;
-    }
-
-    .stat-number {
-      font-size: 2.4rem;
-      font-weight: 700;
-      color: #0f2b44;
-      margin-top: 6px;
-    }
-
-    .container {
-      max-width: 1300px;
+      gap: 8px;
+      padding: 0 32px;
+      max-width: 1400px;
       margin: 0 auto;
-      padding: 10px 32px 32px;
+      width: 100%;
+      border-bottom: 1px solid var(--border);
+      background: var(--card);
+    }
+    .tab {
+      padding: 14px 24px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      color: var(--text-muted);
+      border-bottom: 3px solid transparent;
+      transition: 0.2s;
+    }
+    .tab:hover { color: var(--primary); }
+    .tab.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+      background: rgba(30,58,95,0.05);
+    }
+
+    /* CONTROLS */
+    .controls {
+      padding: 20px 32px;
+      max-width: 1400px;
+      margin: 0 auto;
+      width: 100%;
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .search-input {
+      flex: 1;
+      min-width: 200px;
+      padding: 10px 16px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 0.95rem;
+      background: var(--card);
+    }
+    .filter-select {
+      padding: 10px 16px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 0.95rem;
+      background: var(--card);
+      min-width: 150px;
+    }
+
+    /* CONTAINER */
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 20px 32px 40px;
       width: 100%;
     }
 
-    .section-title {
-      font-weight: 600;
-      font-size: 1.2rem;
-      margin: 10px 0 16px;
-      color: #1e293b;
-    }
-
+    /* REQUEST CARD */
     .request-card {
-      background: white;
-      border-radius: 20px;
-      margin-bottom: 22px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.03);
-      border: 1px solid #ecf1f7;
+      background: var(--card);
+      border-radius: var(--radius);
+      margin-bottom: 20px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
       overflow: hidden;
-      transition: box-shadow 0.2s;
+      transition: 0.2s;
     }
-
-    .request-card:hover {
-      box-shadow: 0 16px 30px rgba(0,0,0,0.05);
-    }
-
+    .request-card:hover { box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
     .request-header {
       padding: 18px 24px;
-      background: #f9fafc;
-      border-bottom: 1px solid #eef2f6;
+      background: #f8fafc;
+      border-bottom: 1px solid var(--border);
       display: flex;
       justify-content: space-between;
       align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
     }
-
-    .request-header h3 {
-      font-weight: 600;
-      font-size: 1.1rem;
-    }
-
+    .request-header h3 { font-weight: 700; font-size: 1.1rem; color: var(--primary); }
     .status-badge {
       padding: 5px 16px;
       border-radius: 30px;
       font-size: 0.75rem;
       font-weight: 700;
+      text-transform: uppercase;
       letter-spacing: 0.3px;
     }
-
-    .status-pending {
-      background: #fff7e5;
-      color: #b45309;
-    }
+    .status-pending { background: #fff7e5; color: #b45309; }
+    .status-approved { background: #dcfce7; color: #15803d; }
+    .status-rejected { background: #fee2e2; color: #b91c1c; }
+    .status-blocked { background: #f1f5f9; color: #475569; }
+    .status-deleted { background: #f1f5f9; color: #94a3b8; text-decoration: line-through; }
 
     .request-body {
       padding: 24px;
@@ -261,18 +251,15 @@
       gap: 32px;
       flex-wrap: wrap;
     }
-
-    .info-section {
-      flex: 2;
-      min-width: 240px;
-    }
-
+    .info-section { flex: 2; min-width: 240px; }
     .info-section p {
       margin-bottom: 10px;
       font-size: 0.95rem;
-      color: #2d3a4f;
+      color: var(--text);
+      display: flex;
+      justify-content: space-between;
     }
-
+    .info-section p strong { color: var(--text-muted); font-weight: 500; }
     .images-section {
       flex: 1.2;
       display: flex;
@@ -280,403 +267,509 @@
       gap: 16px;
       min-width: 180px;
     }
-
     .image-preview {
       width: 100%;
-      max-height: 150px;
+      max-height: 140px;
       object-fit: cover;
-      border-radius: 14px;
+      border-radius: 12px;
       cursor: pointer;
-      border: 1px solid #e2e8f0;
+      border: 1px solid var(--border);
       transition: 0.2s;
       background: #f8fafc;
     }
-
-    .image-preview:hover {
-      transform: scale(1.01);
-      border-color: #94a3b8;
-    }
+    .image-preview:hover { transform: scale(1.02); border-color: var(--primary); }
 
     .action-buttons {
       padding: 16px 24px;
-      background: #fdfdfe;
-      border-top: 1px solid #edf2f9;
+      background: #f8fafc;
+      border-top: 1px solid var(--border);
       display: flex;
       justify-content: flex-end;
-      gap: 14px;
+      gap: 12px;
+      flex-wrap: wrap;
     }
-
-    .btn-reject {
-      background: white;
-      border: 1px solid #fecaca;
-      color: #b91c1c;
-      padding: 10px 24px;
-      border-radius: 30px;
+    .btn {
+      padding: 10px 20px;
+      border-radius: 10px;
       font-weight: 600;
+      font-size: 0.9rem;
       cursor: pointer;
       transition: 0.2s;
-    }
-
-    .btn-reject:hover {
-      background: #fee2e2;
-    }
-
-    .btn-approve {
-      background: #0f2b44;
       border: none;
-      color: white;
-      padding: 10px 28px;
-      border-radius: 30px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: 0.2s;
-      background: linear-gradient(135deg, #1e3b5a, #0a253c);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
     }
-
-    .btn-approve:hover {
-      background: linear-gradient(135deg, #244b6e, #0a253c);
-    }
+    .btn-approve { background: var(--success); color: white; }
+    .btn-approve:hover { background: #059669; }
+    .btn-reject { background: white; border: 1px solid #fecaca; color: var(--danger); }
+    .btn-reject:hover { background: #fee2e2; }
+    .btn-block { background: white; border: 1px solid #cbd5e1; color: #475569; }
+    .btn-block:hover { background: #f1f5f9; }
+    .btn-delete { background: white; border: 1px solid #fecaca; color: var(--danger); }
+    .btn-delete:hover { background: #fee2e2; }
+    .btn-review { background: var(--primary); color: white; }
+    .btn-review:hover { background: var(--primary-dark); }
 
     .empty-state {
       text-align: center;
-      padding: 48px;
-      color: #64748b;
-      font-style: italic;
-      background: white;
-      border-radius: 20px;
+      padding: 60px 20px;
+      color: var(--text-muted);
+      background: var(--card);
+      border-radius: var(--radius);
+      border: 1px dashed var(--border);
     }
 
-    .hidden {
-      display: none !important;
+    /* MODAL */
+    #imageModal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.92);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    #modalImage {
+      max-width: 92%;
+      max-height: 92%;
+      border-radius: 12px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    }
+    #imageModal span {
+      position: absolute;
+      top: 20px; right: 40px;
+      color: white;
+      font-size: 44px;
+      cursor: pointer;
+      font-weight: 300;
     }
 
-    @media (max-width: 700px) {
-      .stats-grid {
-        grid-template-columns: 1fr;
-        padding: 20px;
-      }
-      .request-body {
-        flex-direction: column;
-      }
+    /* REASON MODAL */
+    #reasonModal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      justify-content: center;
+      align-items: center;
+      z-index: 1001;
     }
+    .reason-card {
+      background: var(--card);
+      padding: 24px;
+      border-radius: var(--radius);
+      width: 100%;
+      max-width: 480px;
+      box-shadow: var(--shadow);
+    }
+    .reason-card h3 { margin-bottom: 16px; font-weight: 700; }
+    .reason-card textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 0.95rem;
+      min-height: 100px;
+      margin-bottom: 16px;
+      resize: vertical;
+    }
+    .reason-actions { display: flex; gap: 12px; justify-content: flex-end; }
+
+    /* RESPONSIVE */
+    @media (max-width: 900px) {
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .request-body { flex-direction: column; }
+      .controls { flex-direction: column; align-items: stretch; }
+      .action-buttons { flex-direction: column; }
+      .btn { width: 100%; justify-content: center; }
+    }
+    @media (max-width: 600px) {
+      .stats-grid { grid-template-columns: 1fr; }
+      .header { padding: 16px 20px; }
+      .tabs { padding: 0 20px; overflow-x: auto; }
+      .container { padding: 16px 20px 32px; }
+    }
+    .hidden { display: none !important; }
   </style>
 </head>
 <body>
-  <!-- LOGIN SECTION (displayed first) -->
+  <!-- LOGIN -->
   <div id="login-section" class="login-wrapper">
     <div class="login-card">
-      <h2>Admin Access</h2>
+      <h2>🔐 KYC Admin</h2>
       <div class="field">
         <label>Email</label>
-        <input type="email" id="email" class="login-input" placeholder="admin@example.com" autocomplete="email">
+        <input type="email" id="email" class="login-input" placeholder="admin@kitaa.com" autocomplete="email">
       </div>
       <div class="field">
         <label>Password</label>
-        <input type="password" id="password" class="login-input" placeholder="········" autocomplete="current-password">
+        <input type="password" id="password" class="login-input" placeholder="••••••••" autocomplete="current-password">
       </div>
       <button id="login-button" class="btn-primary" onclick="handleLogin()">Sign in</button>
-      <div id="error-msg" class="error-message"></div>
+      <div id="error-msg" class="error-msg"></div>
     </div>
   </div>
 
-  <!-- DASHBOARD (hidden until login) -->
+  <!-- DASHBOARD -->
   <div id="dashboard" class="dashboard">
     <div class="header">
-      <h1>🔍 KYC Verification</h1>
+      <h1>🔍 KYC Verification Pro</h1>
       <button class="logout-btn" onclick="handleLogout()">Log out</button>
     </div>
 
-    <!-- stats summary -->
+    <!-- Stats -->
     <div class="stats-grid">
-      <div class="stat-card">
+      <div class="stat-card pending">
         <span class="stat-label">Pending</span>
         <span class="stat-number" id="stat-pending">0</span>
       </div>
-      <div class="stat-card">
+      <div class="stat-card approved">
         <span class="stat-label">Approved</span>
         <span class="stat-number" id="stat-approved">0</span>
       </div>
-      <div class="stat-card">
+      <div class="stat-card rejected">
         <span class="stat-label">Rejected</span>
         <span class="stat-number" id="stat-rejected">0</span>
       </div>
+      <div class="stat-card blocked">
+        <span class="stat-label">Blocked</span>
+        <span class="stat-number" id="stat-blocked">0</span>
+      </div>
     </div>
 
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab active" data-tab="pending" onclick="switchTab('pending')">⏳ Pending</button>
+      <button class="tab" data-tab="approved" onclick="switchTab('approved')">✅ Approved</button>
+      <button class="tab" data-tab="rejected" onclick="switchTab('rejected')">❌ Rejected</button>
+      <button class="tab" data-tab="blocked" onclick="switchTab('blocked')">🚫 Blocked</button>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls">
+      <input type="text" class="search-input" id="searchInput" placeholder="Search by name, email, phone, ID..." oninput="filterRequests()">
+      <select class="filter-select" id="typeFilter" onchange="filterRequests()">
+        <option value="">All Types</option>
+        <option value="false">Individual</option>
+        <option value="true">Business</option>
+      </select>
+      <select class="filter-select" id="dateFilter" onchange="filterRequests()">
+        <option value="">All Time</option>
+        <option value="7">Last 7 Days</option>
+        <option value="30">Last 30 Days</option>
+        <option value="90">Last 90 Days</option>
+      </select>
+    </div>
+
+    <!-- List -->
     <div class="container">
-      <div class="section-title">⏳ Pending requests</div>
-      <div id="list-container">Loading data...</div>
+      <div id="list-container">Loading...</div>
     </div>
   </div>
 
-  <!-- IMAGE MODAL -->
-  <div id="imageModal" onclick="closeModal()" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); justify-content: center; align-items: center; z-index: 1000;">
-    <span onclick="closeModal()" style="position: absolute; top: 20px; right: 40px; color: white; font-size: 44px; cursor: pointer; font-weight: 300;">&times;</span>
-    <img id="modalImage" style="max-width: 92%; max-height: 92%; border-radius: 12px; box-shadow: 0 20px 40px black;">
+  <!-- Image Modal -->
+  <div id="imageModal" onclick="closeModal()">
+    <span>&times;</span>
+    <img id="modalImage" alt="Preview">
+  </div>
+
+  <!-- Reason Modal (for block/delete) -->
+  <div id="reasonModal">
+    <div class="reason-card">
+      <h3 id="reasonTitle">Enter Reason</h3>
+      <textarea id="reasonInput" placeholder="Why are you taking this action?"></textarea>
+      <div class="reason-actions">
+        <button class="btn btn-reject" onclick="closeReasonModal()">Cancel</button>
+        <button class="btn btn-approve" id="reasonConfirm">Confirm</button>
+      </div>
+    </div>
   </div>
 
   <script>
-    (function() {
-      // ---------- SUPABASE CONFIG ----------
-      const URL_PROD = 'https://gmsyziclplsrmwlwipqg.supabase.co';
-      const KEY_PROD = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdtc3l6aWNscGxzcm13bHdpcHFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0NTgzODYsImV4cCI6MjA5MjAzNDM4Nn0.hT50-RGvVMBtmg1r1cNqv2Xmku3DR1LA_8wovK9q4EA';
+    // ---------- CONFIG ----------
+    const SUPABASE_URL = 'https://gmsyziclplsrmwlwipqg.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdtc3l6aWNscGxzcm13bHdpcHFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0NTgzODYsImV4cCI6MjA5MjAzNDM4Nn0.hT50-RGvVMBtmg1r1cNqv2Xmku3DR1LA_8wovK9q4EA';
+    const ADMIN_EMAILS = ['kitaakingofficial@gmail.com'];
 
-      // single supabase client
-      const supabaseClient = window.supabase.createClient(URL_PROD, KEY_PROD);
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-      const ADMIN_EMAILS = ['kitaakingofficial@gmail.com'];
+    // ---------- STATE ----------
+    let currentTab = 'pending';
+    let allRequests = [];
+    let pendingAction = null; // { requestId, userId, action: 'block'|'delete' }
 
-      // ---------- GLOBAL STATE ----------
-      let currentStats = { pending: 0, approved: 0, rejected: 0 };
+    // ---------- LOGIN ----------
+    async function handleLogin() {
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const errorMsg = document.getElementById('error-msg');
+      errorMsg.innerText = '';
 
-      // ---------- LOGIN ----------
-      window.handleLogin = async function() {
-        const email = document.getElementById('email').value.trim();
-        const password = document.getElementById('password').value;
-        const errorMsg = document.getElementById('error-msg');
-        errorMsg.innerText = '';
-
-        if (!email || !password) {
-          errorMsg.innerText = 'Please enter email and password.';
-          return;
-        }
-
-        try {
-          const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-          if (error) throw error;
-
-          if (!ADMIN_EMAILS.includes(data.user.email)) {
-            await supabaseClient.auth.signOut();
-            errorMsg.innerText = 'Access denied. Not an admin account.';
-            return;
-          }
-
-          // success: switch to dashboard
-          document.getElementById('login-section').classList.add('hidden');
-          document.getElementById('dashboard').style.display = 'flex';
-          await fetchAndRenderDashboard();
-        } catch (err) {
-          errorMsg.innerText = err.message || 'Login failed';
-        }
-      };
-
-      // ---------- LOGOUT ----------
-      window.handleLogout = async function() {
-        await supabaseClient.auth.signOut();
-        // reset view to login
-        document.getElementById('dashboard').style.display = 'none';
-        document.getElementById('login-section').classList.remove('hidden');
-        document.getElementById('email').value = '';
-        document.getElementById('password').value = '';
-        document.getElementById('error-msg').innerText = '';
-      };
-
-      // ---------- FETCH STATS + PENDING ----------
-      async function fetchAndRenderDashboard() {
-        await Promise.all([fetchStats(), fetchRequests()]);
+      if (!email || !password) {
+        errorMsg.innerText = 'Please enter email and password.';
+        return;
       }
 
-      async function fetchStats() {
-        try {
-          // fetch all statuses for counting (lightweight: we only need status field)
-          const { data, error } = await supabaseClient
-            .from('kyc_requests')
-            .select('status');
-
-          if (error) {
-            console.error('Stats error:', error);
-            return;
-          }
-
-          const counts = { pending: 0, approved: 0, rejected: 0 };
-          (data || []).forEach(item => {
-            if (item.status === 'pending') counts.pending++;
-            else if (item.status === 'approved') counts.approved++;
-            else if (item.status === 'rejected') counts.rejected++;
-          });
-
-          currentStats = counts;
-          document.getElementById('stat-pending').innerText = counts.pending;
-          document.getElementById('stat-approved').innerText = counts.approved;
-          document.getElementById('stat-rejected').innerText = counts.rejected;
-        } catch (e) {
-          console.warn('Stats fetch failed', e);
-        }
-      }
-
-      // ---------- FETCH PENDING REQUESTS ----------
-      window.fetchRequests = async function() {
-        const container = document.getElementById('list-container');
-        container.innerHTML = 'Loading pending requests...';
-
-        const { data, error } = await supabaseClient
-          .from('kyc_requests')
-          .select('*')
-          .eq('status', 'pending')
-          .order('submitted_at', { ascending: false });
-
-        if (error) {
-          container.innerHTML = `<div class="empty-state">Error: ${error.message}</div>`;
+      try {
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+        if (!ADMIN_EMAILS.includes(data.user.email)) {
+          await supabase.auth.signOut();
+          errorMsg.innerText = 'Access denied. Not an admin account.';
           return;
         }
+        document.getElementById('login-section').classList.add('hidden');
+        document.getElementById('dashboard').style.display = 'flex';
+        await fetchAndRender();
+      } catch (err) {
+        errorMsg.innerText = err.message || 'Login failed';
+      }
+    }
 
-        if (!data || data.length === 0) {
-          container.innerHTML = `<div class="empty-state">✨ No pending KYC requests.</div>`;
-          // update stats after possible changes
-          await fetchStats();
-          return;
-        }
+    async function handleLogout() {
+      await supabase.auth.signOut();
+      document.getElementById('dashboard').style.display = 'none';
+      document.getElementById('login-section').classList.remove('hidden');
+      document.getElementById('email').value = '';
+      document.getElementById('password').value = '';
+    }
 
-        container.innerHTML = data.map(req => {
-          const safeName = escapeHtml(req.full_name || 'Unknown');
-          const safeEmail = escapeHtml(req.email || '—');
-          const safePhone = escapeHtml(req.phone_number || '—');
-          const safeNationalId = escapeHtml(req.national_id_number || '—');
-          const isBusiness = req.is_business_account;
-          const businessName = escapeHtml(req.business_name || 'N/A');
-          const businessLicense = escapeHtml(req.business_license_number || 'N/A');
-          const submittedDate = req.submitted_at ? new Date(req.submitted_at).toLocaleString() : '—';
-          const idImage = req.national_id_image_url || '';
-          const selfieImage = req.selfie_image_url || '';
-          const bizLicenseImage = req.business_license_image_url || '';
+    // ---------- TABS ----------
+    function switchTab(tab) {
+      currentTab = tab;
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelector(`.tab[data-tab="${tab}"]`).classList.add('active');
+      filterRequests();
+    }
 
-          return `
-            <div class="request-card">
-              <div class="request-header">
-                <h3>${safeName}</h3>
-                <span class="status-badge status-pending">PENDING</span>
-              </div>
-              <div class="request-body">
-                <div class="info-section">
-                  <p><strong>Email:</strong> ${safeEmail}</p>
-                  <p><strong>Phone:</strong> ${safePhone}</p>
-                  <p><strong>National ID:</strong> ${safeNationalId}</p>
-                  ${isBusiness ? `
-                    <p><strong>Business Name:</strong> ${businessName}</p>
-                    <p><strong>Business License:</strong> ${businessLicense}</p>
-                  ` : ''}
-                  <p><strong>Submitted:</strong> ${submittedDate}</p>
-                </div>
-                <div class="images-section">
-                  ${idImage ? `<div><p><strong>ID Card</strong></p><img class="image-preview" src="${idImage}" onclick="showImage('${idImage}')" alt="ID"></div>` : ''}
-                  ${selfieImage ? `<div><p><strong>Selfie</strong></p><img class="image-preview" src="${selfieImage}" onclick="showImage('${selfieImage}')" alt="Selfie"></div>` : ''}
-                  ${isBusiness && bizLicenseImage ? `<div><p><strong>Business License</strong></p><img class="image-preview" src="${bizLicenseImage}" onclick="showImage('${bizLicenseImage}')" alt="License"></div>` : ''}
-                </div>
-              </div>
-              <div class="action-buttons">
-                <button class="btn-reject" onclick="updateRequestStatus('${req.id}', 'rejected', '${req.user_id}')">✕ Reject</button>
-                <button class="btn-approve" onclick="updateRequestStatus('${req.id}', 'approved', '${req.user_id}')">✓ Approve</button>
-              </div>
-            </div>
-          `;
-        }).join('');
+    // ---------- FETCH ----------
+    async function fetchAndRender() {
+      await fetchStats();
+      await fetchRequests();
+    }
 
-        // refresh stats after rendering list
-        await fetchStats();
-      };
+    async function fetchStats() {
+      const { data, error } = await supabase.from('kyc_requests').select('status');
+      if (error) return console.error('Stats error:', error);
+      const counts = { pending: 0, approved: 0, rejected: 0, blocked: 0 };
+      (data || []).forEach(r => { if (counts[r.status] !== undefined) counts[r.status]++; });
+      document.getElementById('stat-pending').innerText = counts.pending;
+      document.getElementById('stat-approved').innerText = counts.approved;
+      document.getElementById('stat-rejected').innerText = counts.rejected;
+      document.getElementById('stat-blocked').innerText = counts.blocked;
+    }
 
-      // simple escape utility
-      function escapeHtml(text) {
-        if (!text) return '';
-        return String(text)
-          .replace(/&/g, '&amp;')
-          .replace(/</g, '&lt;')
-          .replace(/>/g, '&gt;')
-          .replace(/"/g, '&quot;')
-          .replace(/'/g, '&#039;');
+    async function fetchRequests() {
+      const container = document.getElementById('list-container');
+      container.innerHTML = 'Loading...';
+
+      let query = supabase.from('kyc_requests').select(`
+        *,
+        profiles:user_id (account_status)
+      `).order('submitted_at', { ascending: false });
+
+      if (currentTab !== 'all') query = query.eq('status', currentTab);
+
+      const { data, error } = await query;
+      if (error) {
+        container.innerHTML = `<div class="empty-state">Error: ${error.message}</div>`;
+        return;
       }
 
-      // ---------- UPDATE STATUS (APPROVE/REJECT) ----------
-      window.updateRequestStatus = async function(requestId, status, userId) {
-        if (!confirm(`Are you sure you want to ${status} this request?`)) return;
+      allRequests = data || [];
+      filterRequests();
+    }
 
-        try {
-          const { error: reqError } = await supabaseClient
-            .from('kyc_requests')
-            .update({
-              status: status,
-              reviewed_at: new Date().toISOString()
-            })
-            .eq('id', requestId);
+    // ---------- FILTER ----------
+    function filterRequests() {
+      const search = document.getElementById('searchInput').value.toLowerCase();
+      const typeFilter = document.getElementById('typeFilter').value;
+      const dateFilter = document.getElementById('dateFilter').value;
 
-          if (reqError) throw reqError;
-
-          if (status === 'approved') {
-            const { error: profileError } = await supabaseClient
-              .from('profiles')
-              .update({
-                is_kyc_verified: true,
-                kyc_status: 'approved',
-                is_verified: true,
-                verified_at: new Date().toISOString()
-              })
-              .eq('id', userId);
-            if (profileError) throw profileError;
-          } else if (status === 'rejected') {
-            const { error: profileError } = await supabaseClient
-              .from('profiles')
-              .update({
-                kyc_status: 'rejected'
-              })
-              .eq('id', userId);
-            if (profileError) throw profileError;
-          }
-
-          alert(`Request ${status} successfully.`);
-          // refresh both stats and list
-          await fetchAndRenderDashboard();
-        } catch (error) {
-          alert('Update error: ' + (error.message || error));
-        }
-      };
-
-      // ---------- IMAGE MODAL ----------
-      window.showImage = function(url) {
-        const modal = document.getElementById('imageModal');
-        const modalImg = document.getElementById('modalImage');
-        if (modal && modalImg) {
-          modal.style.display = 'flex';
-          modalImg.src = url;
-        }
-      };
-
-      window.closeModal = function() {
-        const modal = document.getElementById('imageModal');
-        if (modal) modal.style.display = 'none';
-      };
-
-      // ---------- SESSION CHECK ON PAGE LOAD ----------
-      window.onload = async () => {
-        try {
-          const { data: { session } } = await supabaseClient.auth.getSession();
-          if (session && ADMIN_EMAILS.includes(session.user.email)) {
-            // valid admin session: show dashboard directly
-            document.getElementById('login-section').classList.add('hidden');
-            document.getElementById('dashboard').style.display = 'flex';
-            await fetchAndRenderDashboard();
-          } else {
-            // ensure login visible
-            document.getElementById('login-section').classList.remove('hidden');
-            document.getElementById('dashboard').style.display = 'none';
-          }
-        } catch (e) {
-          console.warn('Session check error', e);
-          document.getElementById('login-section').classList.remove('hidden');
-          document.getElementById('dashboard').style.display = 'none';
-        }
-      };
-
-      // allow Enter key on login
-      document.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter' && !document.getElementById('dashboard').style.display.includes('flex')) {
-          const loginVisible = !document.getElementById('login-section').classList.contains('hidden');
-          if (loginVisible) {
-            e.preventDefault();
-            window.handleLogin();
-          }
-        }
+      let filtered = allRequests.filter(req => {
+        const matchesSearch = 
+          (req.full_name?.toLowerCase().includes(search) ||
+           req.email?.toLowerCase().includes(search) ||
+           req.phone_number?.toLowerCase().includes(search) ||
+           req.national_id_number?.toLowerCase().includes(search));
+        const matchesType = !typeFilter || req.is_business_account.toString() === typeFilter;
+        const matchesDate = !dateFilter || 
+          (new Date(req.submitted_at) >= new Date(Date.now() - dateFilter*24*60*60*1000));
+        return matchesSearch && matchesType && matchesDate;
       });
 
-    })();
+      renderList(filtered);
+    }
+
+    // ---------- RENDER ----------
+    function renderList(requests) {
+      const container = document.getElementById('list-container');
+      if (requests.length === 0) {
+        container.innerHTML = `<div class="empty-state">✨ No ${currentTab} requests found.</div>`;
+        return;
+      }
+
+      container.innerHTML = requests.map(req => {
+        const statusClass = `status-${req.status}`;
+        const accountStatus = req.profiles?.account_status || 'active';
+        const isBlocked = accountStatus === 'blocked';
+        const isDeleted = accountStatus === 'deleted';
+
+        return `
+          <div class="request-card">
+            <div class="request-header">
+              <h3>${escapeHtml(req.full_name || 'Unknown')}</h3>
+              <span class="status-badge ${statusClass}">${req.status.toUpperCase()}</span>
+            </div>
+            <div class="request-body">
+              <div class="info-section">
+                <p><strong>Email:</strong> ${escapeHtml(req.email || '—')}</p>
+                <p><strong>Phone:</strong> ${escapeHtml(req.phone_number || '—')}</p>
+                <p><strong>National ID:</strong> ${escapeHtml(req.national_id_number || '—')}</p>
+                ${req.is_business_account ? `
+                  <p><strong>Business:</strong> ${escapeHtml(req.business_name || 'N/A')}</p>
+                  <p><strong>License:</strong> ${escapeHtml(req.business_license_number || 'N/A')}</p>
+                ` : ''}
+                <p><strong>Submitted:</strong> ${new Date(req.submitted_at).toLocaleString()}</p>
+                ${req.review_notes ? `<p><strong>Notes:</strong> ${escapeHtml(req.review_notes)}</p>` : ''}
+              </div>
+              <div class="images-section">
+                ${req.national_id_image_url ? `<div><p><strong>ID Card</strong></p><img class="image-preview" src="${req.national_id_image_url}" onclick="showImage('${req.national_id_image_url}')"></div>` : ''}
+                ${req.selfie_image_url ? `<div><p><strong>Selfie</strong></p><img class="image-preview" src="${req.selfie_image_url}" onclick="showImage('${req.selfie_image_url}')"></div>` : ''}
+                ${req.business_license_image_url ? `<div><p><strong>License</strong></p><img class="image-preview" src="${req.business_license_image_url}" onclick="showImage('${req.business_license_image_url}')"></div>` : ''}
+              </div>
+            </div>
+            <div class="action-buttons">
+              ${currentTab === 'pending' ? `
+                <button class="btn btn-reject" onclick="updateStatus('${req.id}', '${req.user_id}', 'rejected')">✕ Reject</button>
+                <button class="btn btn-approve" onclick="updateStatus('${req.id}', '${req.user_id}', 'approved')">✓ Approve</button>
+              ` : ''}
+              ${currentTab === 'approved' && !isBlocked && !isDeleted ? `
+                <button class="btn btn-block" onclick="openReasonModal('${req.id}', '${req.user_id}', 'block')">🚫 Block User</button>
+                <button class="btn btn-delete" onclick="openReasonModal('${req.id}', '${req.user_id}', 'delete')">🗑️ Delete User</button>
+              ` : ''}
+              ${currentTab === 'rejected' ? `
+                <button class="btn btn-review" onclick="updateStatus('${req.id}', '${req.user_id}', 'pending')">🔄 Re-review</button>
+              ` : ''}
+              ${isBlocked ? `<span style="color:#ef4444;font-weight:600">⚠️ BLOCKED</span>` : ''}
+              ${isDeleted ? `<span style="color:#94a3b8;font-weight:600;text-decoration:line-through">🗑️ DELETED</span>` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // ---------- ACTIONS ----------
+    async function updateStatus(requestId, userId, newStatus) {
+      if (!confirm(`Are you sure you want to ${newStatus} this request?`)) return;
+
+      try {
+        // Update kyc_requests
+        await supabase.from('kyc_requests').update({
+          status: newStatus,
+          reviewed_at: new Date().toISOString(),
+          reviewed_by: (await supabase.auth.getUser()).data.user?.id,
+          action_history: [...(allRequests.find(r=>r.id===requestId)?.action_history||[]), {
+            action: `status_${newStatus}`,
+            by: 'admin',
+            at: new Date().toISOString()
+          }]
+        }).eq('id', requestId);
+
+        // Update profiles if approved
+        if (newStatus === 'approved') {
+          await supabase.from('profiles').update({
+            is_kyc_verified: true,
+            kyc_status: 'approved',
+            is_verified: true,
+            verified_at: new Date().toISOString()
+          }).eq('id', userId);
+        } else if (newStatus === 'rejected') {
+          await supabase.from('profiles').update({ kyc_status: 'rejected' }).eq('id', userId);
+        }
+
+        alert(`Request ${newStatus} successfully.`);
+        await fetchAndRender();
+      } catch (error) {
+        alert('Error: ' + error.message);
+      }
+    }
+
+    function openReasonModal(requestId, userId, action) {
+      pendingAction = { requestId, userId, action };
+      document.getElementById('reasonTitle').innerText = 
+        action === 'block' ? 'Block User — Enter Reason' : 'Delete User — Enter Reason';
+      document.getElementById('reasonInput').value = '';
+      document.getElementById('reasonModal').style.display = 'flex';
+      document.getElementById('reasonConfirm').onclick = confirmReasonAction;
+    }
+
+    function closeReasonModal() {
+      document.getElementById('reasonModal').style.display = 'none';
+      pendingAction = null;
+    }
+
+    async function confirmReasonAction() {
+      if (!pendingAction) return;
+      const reason = document.getElementById('reasonInput').value.trim();
+      if (!reason) { alert('Please enter a reason.'); return; }
+
+      try {
+        const { requestId, userId, action } = pendingAction;
+        const newAccountStatus = action === 'block' ? 'blocked' : 'deleted';
+        
+        // Update profiles account_status
+        await supabase.from('profiles').update({
+          account_status: newAccountStatus,
+          action_history: [...(allRequests.find(r=>r.id===requestId)?.action_history||[]), {
+            action: `account_${action}`,
+            reason: reason,
+            by: 'admin',
+            at: new Date().toISOString()
+          }]
+        }).eq('id', userId);
+
+        alert(`User ${action}ed successfully.`);
+        closeReasonModal();
+        await fetchAndRender();
+      } catch (error) {
+        alert('Error: ' + error.message);
+      }
+    }
+
+    // ---------- UTILS ----------
+    function escapeHtml(text) {
+      if (!text) return '';
+      return String(text).replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[s]));
+    }
+
+    function showImage(url) {
+      document.getElementById('modalImage').src = url;
+      document.getElementById('imageModal').style.display = 'flex';
+    }
+    function closeModal() {
+      document.getElementById('imageModal').style.display = 'none';
+    }
+
+    // ---------- INIT ----------
+    window.onload = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session && ADMIN_EMAILS.includes(session.user.email)) {
+        document.getElementById('login-section').classList.add('hidden');
+        document.getElementById('dashboard').style.display = 'flex';
+        await fetchAndRender();
+      }
+    };
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !document.getElementById('dashboard').style.display.includes('flex')) {
+        const loginVisible = !document.getElementById('login-section').classList.contains('hidden');
+        if (loginVisible) { e.preventDefault(); handleLogin(); }
+      }
+    });
   </script>
 </body>
 </html>
