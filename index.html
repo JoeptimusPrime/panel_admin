@@ -7,6 +7,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
+    /* Keep all your existing CSS styles here */
     :root {
       --primary: #1e3a5f;
       --primary-dark: #0f2b44;
@@ -29,7 +30,6 @@
       line-height: 1.5;
       min-height: 100vh;
     }
-    /* LOGIN */
     .login-wrapper {
       display: flex;
       justify-content: center;
@@ -94,8 +94,6 @@
     }
     .btn-primary:hover { transform: translateY(-1px); box-shadow: var(--shadow); }
     .error-msg { color: var(--danger); font-size: 0.9rem; margin-top: 1rem; font-weight: 500; }
-
-    /* DASHBOARD */
     .dashboard { display: none; flex-direction: column; min-height: 100vh; }
     .header {
       background: var(--card);
@@ -118,8 +116,6 @@
       transition: 0.2s;
     }
     .logout-btn:hover { background: #f1f5f9; }
-
-    /* STATS */
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -143,8 +139,6 @@
     .stat-card.approved .stat-number { color: var(--success); }
     .stat-card.rejected .stat-number { color: var(--danger); }
     .stat-card.blocked .stat-number { color: #64748b; }
-
-    /* TABS */
     .tabs {
       display: flex;
       gap: 8px;
@@ -171,8 +165,6 @@
       border-bottom-color: var(--primary);
       background: rgba(30,58,95,0.05);
     }
-
-    /* CONTROLS */
     .controls {
       padding: 20px 32px;
       max-width: 1400px;
@@ -200,16 +192,12 @@
       background: var(--card);
       min-width: 150px;
     }
-
-    /* CONTAINER */
     .container {
       max-width: 1400px;
       margin: 0 auto;
       padding: 20px 32px 40px;
       width: 100%;
     }
-
-    /* REQUEST CARD */
     .request-card {
       background: var(--card);
       border-radius: var(--radius);
@@ -244,7 +232,6 @@
     .status-rejected { background: #fee2e2; color: #b91c1c; }
     .status-blocked { background: #f1f5f9; color: #475569; }
     .status-deleted { background: #f1f5f9; color: #94a3b8; text-decoration: line-through; }
-
     .request-body {
       padding: 24px;
       display: flex;
@@ -278,7 +265,6 @@
       background: #f8fafc;
     }
     .image-preview:hover { transform: scale(1.02); border-color: var(--primary); }
-
     .action-buttons {
       padding: 16px 24px;
       background: #f8fafc;
@@ -310,7 +296,6 @@
     .btn-delete:hover { background: #fee2e2; }
     .btn-review { background: var(--primary); color: white; }
     .btn-review:hover { background: var(--primary-dark); }
-
     .empty-state {
       text-align: center;
       padding: 60px 20px;
@@ -319,8 +304,6 @@
       border-radius: var(--radius);
       border: 1px dashed var(--border);
     }
-
-    /* MODAL */
     #imageModal {
       display: none;
       position: fixed;
@@ -345,8 +328,6 @@
       cursor: pointer;
       font-weight: 300;
     }
-
-    /* REASON MODAL */
     #reasonModal {
       display: none;
       position: fixed;
@@ -377,8 +358,6 @@
       resize: vertical;
     }
     .reason-actions { display: flex; gap: 12px; justify-content: flex-end; }
-
-    /* RESPONSIVE */
     @media (max-width: 900px) {
       .stats-grid { grid-template-columns: repeat(2, 1fr); }
       .request-body { flex-direction: column; }
@@ -416,7 +395,7 @@
   <!-- DASHBOARD -->
   <div id="dashboard" class="dashboard">
     <div class="header">
-      <h1>🔍 KYC Verification Pro</h1>
+      <h1>🔍 KYC Verification For Kitaa King</h1>
       <button class="logout-btn" onclick="handleLogout()">Log out</button>
     </div>
 
@@ -476,7 +455,7 @@
     <img id="modalImage" alt="Preview">
   </div>
 
-  <!-- Reason Modal (for block/delete) -->
+  <!-- Reason Modal -->
   <div id="reasonModal">
     <div class="reason-card">
       <h3 id="reasonTitle">Enter Reason</h3>
@@ -490,42 +469,46 @@
 
   <script>
     // ---------- CONFIG ----------
-    const SUPABASE_URL = 'https://gmsyziclplsrmwlwipqg.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdtc3l6aWNscGxzcm13bHdpcHFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0NTgzODYsImV4cCI6MjA5MjAzNDM4Nn0.hT50-RGvVMBtmg1r1cNqv2Xmku3DR1LA_8wovK9q4EA';
+    const SUPABASE_URL = 'https://gmsyziclplsrmwlwipqg.supabase.co';      // ✅ REPLACE THIS
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdtc3l6aWNscGxzcm13bHdpcHFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0NTgzODYsImV4cCI6MjA5MjAzNDM4Nn0.hT50-RGvVMBtmg1r1cNqv2Xmku3DR1LA_8wovK9q4EA'; // ✅ REPLACE THIS
     const ADMIN_EMAILS = ['kitaakingofficial@gmail.com'];
 
+    // ✅ ONLY ONE supabase declaration
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     // ---------- STATE ----------
     let currentTab = 'pending';
     let allRequests = [];
-    let pendingAction = null; // { requestId, userId, action: 'block'|'delete' }
+    let pendingAction = null;
 
     // ---------- LOGIN ----------
     async function handleLogin() {
       const email = document.getElementById('email').value.trim();
       const password = document.getElementById('password').value;
       const errorMsg = document.getElementById('error-msg');
+      const btn = document.getElementById('login-button');
+      
       errorMsg.innerText = '';
-
-      if (!email || !password) {
-        errorMsg.innerText = 'Please enter email and password.';
-        return;
-      }
+      btn.disabled = true;
+      btn.innerText = 'Signing in...';
 
       try {
         const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+        
         if (error) throw error;
         if (!ADMIN_EMAILS.includes(data.user.email)) {
           await supabase.auth.signOut();
-          errorMsg.innerText = 'Access denied. Not an admin account.';
-          return;
+          throw new Error('Access denied. Not an admin account.');
         }
+        
         document.getElementById('login-section').classList.add('hidden');
         document.getElementById('dashboard').style.display = 'flex';
         await fetchAndRender();
       } catch (err) {
         errorMsg.innerText = err.message || 'Login failed';
+      } finally {
+        btn.disabled = false;
+        btn.innerText = 'Sign in';
       }
     }
 
@@ -537,7 +520,6 @@
       document.getElementById('password').value = '';
     }
 
-    // ---------- TABS ----------
     function switchTab(tab) {
       currentTab = tab;
       document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -545,7 +527,6 @@
       filterRequests();
     }
 
-    // ---------- FETCH ----------
     async function fetchAndRender() {
       await fetchStats();
       await fetchRequests();
@@ -583,7 +564,6 @@
       filterRequests();
     }
 
-    // ---------- FILTER ----------
     function filterRequests() {
       const search = document.getElementById('searchInput').value.toLowerCase();
       const typeFilter = document.getElementById('typeFilter').value;
@@ -604,7 +584,6 @@
       renderList(filtered);
     }
 
-    // ---------- RENDER ----------
     function renderList(requests) {
       const container = document.getElementById('list-container');
       if (requests.length === 0) {
@@ -662,24 +641,16 @@
       }).join('');
     }
 
-    // ---------- ACTIONS ----------
     async function updateStatus(requestId, userId, newStatus) {
       if (!confirm(`Are you sure you want to ${newStatus} this request?`)) return;
 
       try {
-        // Update kyc_requests
         await supabase.from('kyc_requests').update({
           status: newStatus,
           reviewed_at: new Date().toISOString(),
           reviewed_by: (await supabase.auth.getUser()).data.user?.id,
-          action_history: [...(allRequests.find(r=>r.id===requestId)?.action_history||[]), {
-            action: `status_${newStatus}`,
-            by: 'admin',
-            at: new Date().toISOString()
-          }]
         }).eq('id', requestId);
 
-        // Update profiles if approved
         if (newStatus === 'approved') {
           await supabase.from('profiles').update({
             is_kyc_verified: true,
@@ -721,15 +692,8 @@
         const { requestId, userId, action } = pendingAction;
         const newAccountStatus = action === 'block' ? 'blocked' : 'deleted';
         
-        // Update profiles account_status
         await supabase.from('profiles').update({
           account_status: newAccountStatus,
-          action_history: [...(allRequests.find(r=>r.id===requestId)?.action_history||[]), {
-            action: `account_${action}`,
-            reason: reason,
-            by: 'admin',
-            at: new Date().toISOString()
-          }]
         }).eq('id', userId);
 
         alert(`User ${action}ed successfully.`);
@@ -740,7 +704,6 @@
       }
     }
 
-    // ---------- UTILS ----------
     function escapeHtml(text) {
       if (!text) return '';
       return String(text).replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[s]));
@@ -754,7 +717,6 @@
       document.getElementById('imageModal').style.display = 'none';
     }
 
-    // ---------- INIT ----------
     window.onload = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session && ADMIN_EMAILS.includes(session.user.email)) {
