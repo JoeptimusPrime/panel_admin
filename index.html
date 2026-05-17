@@ -544,25 +544,34 @@
     }
 
     async function fetchRequests() {
-      const container = document.getElementById('list-container');
-      container.innerHTML = 'Loading...';
+  const container = document.getElementById('list-container');
+  container.innerHTML = 'Loading...';
 
-      let query = supabase.from('kyc_requests').select(`
-        *,
-        profiles:user_id (account_status)
-      `).order('submitted_at', { ascending: false });
+  let query = supabase.from('kyc_requests').select(`
+    *,
+    profiles:user_id (account_status)
+  `).order('submitted_at', { ascending: false });
 
-      if (currentTab !== 'all') query = query.eq('status', currentTab);
+  // ✅ Handle case-insensitive status filtering
+  if (currentTab === 'approved') {
+    query = query.or('status.eq.Approved,status.eq.approved,status.eq.VERIFIED');
+  } else if (currentTab === 'pending') {
+    query = query.or('status.eq.Pending,status.eq.pending');
+  } else if (currentTab === 'rejected') {
+    query = query.or('status.eq.Rejected,status.eq.rejected');
+  } else if (currentTab === 'blocked') {
+    query = query.eq('status', 'blocked');
+  }
 
-      const { data, error } = await query;
-      if (error) {
-        container.innerHTML = `<div class="empty-state">Error: ${error.message}</div>`;
-        return;
-      }
+  const { data, error } = await query;
+  if (error) {
+    container.innerHTML = `<div class="empty-state">Error: ${error.message}</div>`;
+    return;
+  }
 
-      allRequests = data || [];
-      filterRequests();
-    }
+  allRequests = data || [];
+  filterRequests();
+}
 
     function filterRequests() {
       const search = document.getElementById('searchInput').value.toLowerCase();
