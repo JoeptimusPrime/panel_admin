@@ -548,8 +548,7 @@
   container.innerHTML = 'Loading...';
 
   let query = supabase.from('kyc_requests').select(`
-    *,
-    profiles:user_id (account_status)
+    *
   `).order('submitted_at', { ascending: false });
 
   // ✅ Handle case-insensitive status filtering
@@ -602,7 +601,7 @@
 
       container.innerHTML = requests.map(req => {
         const statusClass = `status-${req.status}`;
-        const accountStatus = req.profiles?.account_status || 'active';
+        const accountStatus = req.account_status || 'active';
         const isBlocked = accountStatus === 'blocked';
         const isDeleted = accountStatus === 'deleted';
 
@@ -650,33 +649,88 @@
       }).join('');
     }
 
-    async function updateStatus(requestId, userId, newStatus) {
-      if (!confirm(`Are you sure you want to ${newStatus} this request?`)) return;
+   async function updateStatus(requestId, userId, newStatus) {
+  if (!confirm(`Are you sure you want to ${newStatus} this request?`)) return;
 
-      try {
-        await supabase.from('kyc_requests').update({
-          status: newStatus,
-          reviewed_at: new Date().toISOString(),
-          reviewed_by: (await supabase.auth.getUser()).data.user?.id,
-        }).eq('id', requestId);
+  try {
+    // ✅ Determine account_status based on action
+    let accountStatus = 'active';
+    if (newStatus === 'approved') accountStatus = 'active';
+    else if (newStatus === 'rejected') accountStatus = 'active'; // Rejected users can still log in, just not verified
 
-        if (newStatus === 'approved') {
-          await supabase.from('profiles').update({
-            is_kyc_verified: true,
-            kyc_status: 'approved',
-            is_verified: true,
-            verified_at: new Date().toISOString()
-          }).eq('id', userId);
-        } else if (newStatus === 'rejected') {
-          await supabase.from('profiles').update({ kyc_status: 'rejected' }).eq('id', userId);
-        }
+    // ✅ Update kyc_requests (with account_status sync)
+    await supabase.from('kyc_requests').update({
+      status: newStatus,
+      account_status: accountStatus, // ✅ Sync here
+      reviewed_at: new Date().toISOString(),
+      reviewed_by: (await supabase.auth.getUser()).data.user?.id,
+    }).eq('id', requestId);
 
-        alert(`Request ${newStatus} successfully.`);
-        await fetchAndRender();
-      } catch (error) {
-        alert('Error: ' + error.message);
-      }
+    // ✅ Update profiles table
+    if (newStatus === 'approved') {
+      await supabase.from('profiles').update({
+        is_kyc_verified: true,
+        kyc_status: 'approved',
+        is_verified: true,
+        verified_at: new Date().toISOString()
+      }).eq('id', userId);
+    } else if (newStatus === 'rejected') {
+      await supabase.from('profiles').update({ 
+        kyc_status: 'rejected' 
+      }).eq('id', userId);
     }
+
+    alert(`Request ${newStatus} successfully.`);
+    await fetchAndRender();
+  } catch (error) {
+    alert('Error: ' + error.message);
+  }
+}
+
+// ✅ Block User (separate from approve/reject)
+async function blockUser(requestId, userId, reason) {
+  try {
+    // Update both tables
+    await Promise.all([
+      supabase.from('kyc_requests').update({
+        account_status: 'blocked',
+        review_notes: reason || 'Blocked by admin',
+        reviewed_at: new Date().toISOString()
+      }).eq('id', requestId),
+      
+      supabase.from('profiles').update({
+        account_status: 'blocked'
+      }).eq('id', userId)
+    ]);
+    
+    alert('User blocked successfully.');
+    await fetchAndRender();
+  } catch (error) {
+    alert('Error: ' + error.message);
+  }
+}
+
+// ✅ Delete User (soft delete via account_status)
+async function deleteUser(requestId, userId, reason) {
+  try {
+    await Promise.all([
+      supabase.from('kyc_requests').update({
+        account_status: 'deleted',
+        review_notes: reason || 'Deleted by admin',
+        reviewed_at: new Date().toISOString()
+      }).eq('id', requestId),
+      
+      supabase.from('profiles').update({
+        account_status: 'deleted'
+      }).eq('id', userId)
+    ]);
+    
+    alert('User marked as deleted.');
+    await fetchAndRender();
+  } catch (error) {
+    alert('Error: ' + error.message);
+  }
+}
 
     function openReasonModal(requestId, userId, action) {
       pendingAction = { requestId, userId, action };
