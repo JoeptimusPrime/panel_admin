@@ -470,8 +470,8 @@
 
   <script>
     // ---------- CONFIG ----------
-    const SUPABASE_URL = 'https://gmsyziclplsrmwlwipqg.supabase.co';      // ✅ REPLACE THIS
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdtc3l6aWNscGxzcm13bHdpcHFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0NTgzODYsImV4cCI6MjA5MjAzNDM4Nn0.hT50-RGvVMBtmg1r1cNqv2Xmku3DR1LA_8wovK9q4EA'; // ✅ REPLACE THIS
+    const SUPABASE_URL = process.env.SUPABASE_URL || 'https://gmsyziclplsrmwlwipqg.supabase.co';      // ✅ REPLACE THIS
+    const SUPABASE_KEY = process.env.SUPABASE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdtc3l6aWNscGxzcm13bHdpcHFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0NTgzODYsImV4cCI6MjA5MjAzNDM4Nn0.hT50-RGvVMBtmg1r1cNqv2Xmku3DR1LA_8wovK9q4EA'; // ✅ REPLACE THIS
     const ADMIN_EMAILS = ['kitaakingofficial@gmail.com'];
 
     // ✅ ONLY ONE supabase declaration
